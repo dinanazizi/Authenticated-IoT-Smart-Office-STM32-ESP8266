@@ -1,0 +1,9 @@
+# Ignore AWS keys and Wi-Fi credentials
+ESP8266_Gateway/src/secrets.h
+
+# Ignore compiled build files (PlatformIO/Arduino)
+.pio/
+.vscode/
+build/
+*.bin
+*.elf

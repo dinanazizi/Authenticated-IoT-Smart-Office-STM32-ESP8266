@@ -1,0 +1,231 @@
+[
+    {
+        "id": "f6f2187d.f17ca8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "268166245715d907",
+        "type": "mqtt in",
+        "z": "f6f2187d.f17ca8",
+        "name": "AWS IoT",
+        "topic": "my_secret_office_998877/sensors",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ccb3e488b135960f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 480,
+        "y": 280,
+        "wires": [
+            [
+                "3eb28fde488a5d8e"
+            ]
+        ]
+    },
+    {
+        "id": "3eb28fde488a5d8e",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 1",
+        "func": "// 1. If the AWS node sent a raw Buffer, convert it to a string\nif (Buffer.isBuffer(msg.payload)) {\n    msg.payload = msg.payload.toString();\n}\n\n// 2. Safely parse JSON and handle errors\nif (typeof msg.payload === \"string\") {\n    try {\n        // Try to parse the sensor data\n        msg.payload = JSON.parse(msg.payload);\n    } catch (error) {\n        // If it fails (because it is a command like <FAN_ON>), do not crash!\n        // Just print a warning and stop the node from sending it forward.\n        node.warn(\"Ignored non-JSON command: \" + msg.payload);\n        return null;\n    }\n}\n\n// 3. Prevent the \"Zero Trap\" by forcing floats (Keeping your original logic)\nif (msg.payload.WATT === 0) msg.payload.WATT = 0.001;\nif (msg.payload.CURR === 0) msg.payload.CURR = 0.001;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 280,
+        "wires": [
+            [
+                "d1cc1417a34ecfc6",
+                "59eaae174acaa05d"
+            ]
+        ]
+    },
+    {
+        "id": "d1cc1417a34ecfc6",
+        "type": "influxdb out",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "8896233593f75f4b",
+        "name": "Local Influx",
+        "measurement": "sensors",
+        "precision": "s",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 890,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "59eaae174acaa05d",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "d06fe61e6f2c88bd",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "Morning Pre-Cool (07:00)",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 00 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "my_secret_office_998877/commands",
+        "payload": "<FAN_ON>",
+        "payloadType": "str",
+        "x": 210,
+        "y": 400,
+        "wires": [
+            [
+                "73a5a7cda64261e4"
+            ]
+        ]
+    },
+    {
+        "id": "aa14c166a4ece4ae",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "End of Day Auto-Reset (18:00)",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 01 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "my_secret_office_998877/commands",
+        "payload": "<AUTO>",
+        "payloadType": "str",
+        "x": 210,
+        "y": 500,
+        "wires": [
+            [
+                "73a5a7cda64261e4"
+            ]
+        ]
+    },
+    {
+        "id": "73a5a7cda64261e4",
+        "type": "mqtt out",
+        "z": "f6f2187d.f17ca8",
+        "name": "AWS IoT",
+        "topic": "",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ccb3e488b135960f",
+        "x": 460,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "ccb3e488b135960f",
+        "type": "mqtt-broker",
+        "name": "AWS IoT",
+        "broker": "alv4c2iswroi6-ats.iot.ap-southeast-1.amazonaws.com",
+        "port": "8883",
+        "tls": "b9121756c065516e",
+        "clientid": "NodeRED_Mac_Server",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "8896233593f75f4b",
+        "type": "influxdb",
+        "hostname": "host.docker.internal",
+        "port": 8086,
+        "protocol": "http",
+        "database": "smart_office_db",
+        "name": "Local Influx",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "b9121756c065516e",
+        "type": "tls-config",
+        "name": "NODE to AWS",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "ddd2a161dbe16b9fe5096b4df0daed225d93bec9680607bfd893e150fa9a7bf0-certificate.pem.crt",
+        "keyname": "ddd2a161dbe16b9fe5096b4df0daed225d93bec9680607bfd893e150fa9a7bf0-private.pem.key",
+        "caname": "AmazonRootCA1.pem",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    },
+    {
+        "id": "824aa909d93853d6",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-influxdb": "0.7.0"
+        }
+    }
+]
