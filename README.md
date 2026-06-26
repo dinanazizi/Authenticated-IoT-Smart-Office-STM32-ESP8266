@@ -1,100 +1,149 @@
-IoT-Based Smart Office Energy Management System 🏢⚡
+# IoT-Based Smart Office Energy Management System 🏢⚡
 
-Firmware and cloud configuration for an undergraduate thesis project:
+Firmware and cloud configuration for the undergraduate thesis project:
 
-Development of an IoT-Based Smart Office Energy Management System with Authenticated MQTT Communication Using STM32–ESP8266 Embedded Prototype
+> **Development of an IoT-Based Smart Office Energy Management System with Authenticated MQTT Communication Using STM32–ESP8266 Embedded Prototype**
 
-This project implements a single-zone, low-voltage 5 V DC smart office prototype using STM32F411, ESP8266, AWS IoT Core, Node-RED, InfluxDB, and Grafana.
+This repository contains a **single-zone, low-voltage 5 V DC smart office prototype** using STM32F411, ESP8266, AWS IoT Core, Node-RED, InfluxDB, and Grafana.
 
-⸻
+---
 
-Project Structure
+## 📁 Repository Structure
 
+```text
 .
 ├── STM32_Blackpill/
-│   └── STM32 firmware for sensor reading, automation logic, relay control, and UART telemetry
+│   └── Firmware for sensor reading, edge automation, relay control, and UART telemetry
 │
 ├── ESP8266_Gateway/
-│   └── ESP8266 firmware for Wi-Fi, MQTT over TLS, mTLS, AWS IoT Core, and offline fallback dashboard
+│   └── Firmware for Wi-Fi, MQTT over TLS, mTLS, AWS IoT Core, and offline fallback mode
 │
 ├── Node-RED_Flows/
 │   └── Exported Node-RED flows for MQTT routing, InfluxDB storage, and scheduling
 │
 └── README.md
+```
 
-⸻
+---
 
-Main Features
+## ✨ Main Features
 
-* STM32F411 local edge automation
-* PIR occupancy detection with 15-minute timeout
-* DHT22 temperature hysteresis control
-* ACS712 current estimation
-* Relay control for 5 V DC LED and fan loads
-* ESP8266 MQTT gateway
-* MQTT over TLS with AWS IoT Core
-* mTLS certificate-based authentication
-* CRC16 UART validation with ACK/NACK handling
-* Node-RED routing to InfluxDB
-* Grafana dashboard visualization
-* Offline fallback Access Point and local control dashboard
+| Module | Features |
+|---|---|
+| **STM32F411 Edge Controller** | PIR occupancy detection, 15-minute timeout, DHT22 hysteresis control, ACS712 current estimation, relay control |
+| **ESP8266 Gateway** | Wi-Fi connection, MQTT over TLS, mTLS authentication, AWS IoT Core integration, offline fallback dashboard |
+| **UART Communication** | JSON telemetry, CRC16 validation, ACK/NACK handling, retry mechanism |
+| **Cloud & Dashboard** | Node-RED routing, InfluxDB storage, Grafana visualization, scheduled command publishing |
 
-⸻
+---
 
-Security Note
+## 🔐 Security Note
 
-AWS IoT certificates, private keys, endpoints, and Wi-Fi credentials are not included in this repository.
+Sensitive credentials are **not included** in this repository, including:
 
-To run the ESP8266 firmware:
+- Wi-Fi SSID and password
+- AWS IoT Core endpoint
+- Root CA certificate
+- X.509 device certificate
+- Device private key
+- MQTT topic configuration
 
-1. Go to the ESP8266_Gateway/ directory.
-2. Rename:
+To run the ESP8266 firmware, create your own secret configuration file.
 
+```text
+ESP8266_Gateway/
+├── secrets_template.h
+└── secrets.h
+```
+
+Rename:
+
+```text
 secrets_template.h
+```
 
 to:
 
+```text
 secrets.h
+```
 
-3. Add your own:
+Then fill in your own Wi-Fi and AWS IoT Core credentials.
 
-Wi-Fi SSID
-Wi-Fi password
+---
+
+## 🚀 How to Run
+
+### 1. Flash STM32 firmware
+
+Open the `STM32_Blackpill/` directory using PlatformIO or Arduino-compatible STM32 setup, then upload the firmware to the STM32F411 Black Pill.
+
+### 2. Configure ESP8266 credentials
+
+Open the `ESP8266_Gateway/` directory and create `secrets.h` from `secrets_template.h`.
+
+Add your own:
+
+```text
+Wi-Fi credentials
 AWS IoT endpoint
 Root CA certificate
 Device certificate
 Private key
 MQTT topics
+```
 
-4. Compile and flash using PlatformIO or Arduino IDE.
+### 3. Flash ESP8266 firmware
 
-⸻
+Compile and upload the ESP8266 gateway firmware using PlatformIO or Arduino IDE.
 
-Prototype Limitation
+### 4. Import Node-RED flows
 
-This project is a 5 V DC laboratory prototype. It is not designed for direct 220 V AC office deployment.
+Import the exported flow file from:
 
-Real AC deployment would require proper AC metering, certified switching components, electrical protection, enclosure design, and safety certification.
+```text
+Node-RED_Flows/
+```
 
-⸻
+Configure the MQTT, AWS IoT, and InfluxDB nodes according to your environment.
 
-Tools Used
+### 5. Open Grafana dashboard
 
-* STM32F411 Black Pill
-* ESP8266
-* PlatformIO / Arduino Framework
-* AWS IoT Core
-* Node-RED
-* InfluxDB
-* Grafana
-* Wireshark
-* Mosquitto
+Connect Grafana to InfluxDB and create panels for telemetry visualization, relay states, energy estimation, and billing estimation.
 
-⸻
+---
 
-Author
+## ⚠️ Prototype Limitation
 
-Dinan Hifzhan Azizi
-Electronics and Instrumentation Study Program
-Universitas Gadjah Mada
+This project is designed only as a **5 V DC laboratory prototype**.
+
+It is **not** intended for direct 220 V AC office deployment.
+
+Real AC deployment requires:
+
+- Dedicated AC energy metering
+- Certified relay or contactor
+- Fuse and protection circuit
+- Proper enclosure design
+- Electrical safety certification
+
+---
+
+## 🛠 Tools and Platforms
+
+| Category | Tools |
+|---|---|
+| Microcontroller | STM32F411 Black Pill, ESP8266 |
+| Firmware | PlatformIO, Arduino Framework |
+| Cloud & Middleware | AWS IoT Core, Node-RED |
+| Database & Dashboard | InfluxDB, Grafana |
+| Validation | Wireshark, Mosquitto, OpenSSL |
+
+---
+
+## 👤 Author
+
+**Dinan Hifzhan Azizi**  
+Electronics and Instrumentation Study Program  
+Universitas Gadjah Mada  
 2026
