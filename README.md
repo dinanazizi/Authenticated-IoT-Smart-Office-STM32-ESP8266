@@ -1,4 +1,4 @@
-# IoT-Based Smart Office Energy Management System 🏢⚡
+# IoT-Based Smart Office Energy Management System
 
 Firmware and cloud configuration for the undergraduate thesis project:
 
