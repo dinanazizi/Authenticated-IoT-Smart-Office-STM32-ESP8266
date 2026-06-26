@@ -140,10 +140,3 @@ Real AC deployment requires:
 | Validation | Wireshark, Mosquitto, OpenSSL |
 
 ---
-
-## 👤 Author
-
-**Dinan Hifzhan Azizi**  
-Electronics and Instrumentation Study Program  
-Universitas Gadjah Mada  
-2026
